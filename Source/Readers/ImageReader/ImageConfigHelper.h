@@ -79,6 +79,11 @@ public:
         return m_labelType;
     }
 
+    ElementType GetElementType() const
+    {
+        return m_elementType;
+    }
+
 private:
     ImageConfigHelper(const ImageConfigHelper&) = delete;
     ImageConfigHelper& operator=(const ImageConfigHelper&) = delete;
@@ -93,6 +98,7 @@ private:
     bool m_grayscale;
     CropType m_cropType;
     LabelType m_labelType;
+    ElementType m_elementType;
 };
 
 typedef std::shared_ptr<ImageConfigHelper> ImageConfigHelperPtr;

@@ -31,7 +31,7 @@ BOOST_AUTO_TEST_CASE(ImageReaderSimple)
         4,
         1,
         1,
-        0,
+        1,
         0,
         1);
 }
@@ -94,6 +94,40 @@ BOOST_AUTO_TEST_CASE(ImageReaderLabelOutOfRange)
             1),
             std::runtime_error,
             [](std::runtime_error const& ex) { return string("Image 'images\\red.jpg' has invalid class id '10'. Expected label dimension is '4'. Line 3 in file ./ImageReaderLabelOutOfRange_map.txt.") == ex.what(); });
+}
+
+BOOST_AUTO_TEST_CASE(ImageReaderSimpleRegressionFloat)
+{
+    HelperRunReaderTest<float>(
+        testDataPath() + "/Config/ImageReaderSimpleRegressionFloat_Config.cntk",
+        testDataPath() + "/Control/ImageReaderSimpleRegression_Control.txt",
+        testDataPath() + "/Control/ImageReaderSimpleRegressionFloat_Output.txt",
+        "Regression_Test",
+        "reader",
+        4,
+        4,
+        1,
+        1,
+        1,
+        0,
+        1);
+}
+
+BOOST_AUTO_TEST_CASE(ImageReaderSimpleRegressionDouble)
+{
+    HelperRunReaderTest<double>(
+        testDataPath() + "/Config/ImageReaderSimpleRegressionDouble_Config.cntk",
+        testDataPath() + "/Control/ImageReaderSimpleRegression_Control.txt",
+        testDataPath() + "/Control/ImageReaderSimpleRegressionDouble_Output.txt",
+        "Regression_Test",
+        "reader",
+        4,
+        4,
+        1,
+        1,
+        1,
+        0,
+        1);
 }
 
 BOOST_AUTO_TEST_CASE(ImageReaderZip)

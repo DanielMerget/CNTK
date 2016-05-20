@@ -10,6 +10,7 @@
 #include "ByteReader.h"
 #include "ImageConfigHelper.h"
 #include <unordered_map>
+#include <numeric>
 
 #include <inttypes.h>
 
@@ -146,6 +147,7 @@ private:
         std::string imagePath;
         std::string read;
         PrecisionType value;
+        std::vector<PrecisionType> result;
 
         if (!std::getline(ss, imagePath, '\t'))
             RuntimeError("Could not read map file, line %" PRIu64 " in file %s.", lineIndex, mapPath.c_str());
@@ -165,10 +167,11 @@ private:
             if (read.c_str() == eptr || errno == ERANGE)
                 invoke_error();
 
-            description.m_label.push_back(value);
+            result.push_back(value);
         }
 
         description.m_path = imagePath;
+        description.m_label = result;
     };
 
     // Creates a set of sequence descriptions.
@@ -237,7 +240,7 @@ private:
         }
 
     public:
-        ImageChunk(ImageSequenceDescription<labelType, PrecisionType>& description, ImageDataDeserializer<labelType, PrecisionType>& parent)
+        ImageChunk(const ImageSequenceDescription<labelType, PrecisionType>& description, ImageDataDeserializer<labelType, PrecisionType>& parent)
             : m_description(description), m_parent(parent)
         {
         }
@@ -285,26 +288,32 @@ private:
     };
 
     template<LabelType labelType, class SequenceType>
-    void CreateLabelFor(const ImageSequenceDescription<labelType, PrecisionType>& desc, SequenceType& data);
+    void CreateLabelFor(ImageSequenceDescription<labelType, PrecisionType>& desc, SequenceType& data);
 
     // Specialization for classification
     template<>
-    void ImageDataDeserializer::CreateLabelFor(const ImageSequenceDescription<LabelType::Classification, PrecisionType>& desc, SparseSequenceData& data)
+    void ImageDataDeserializer::CreateLabelFor(ImageSequenceDescription<LabelType::Classification, PrecisionType>& desc, SparseSequenceData& data)
     {
-        static IndexType one(1);
-        static std::vector<IndexType> indices(m_labelDimension, IndexType(0));
+        auto zero_to_n = [](size_t n)
+        {
+            std::vector<IndexType> x(n);
+            std::iota(x.begin(), x.end(), 0);
+            return x; 
+        };
+        static PrecisionType one(1);
+        static std::vector<IndexType> indices = zero_to_n(m_labelDimension);
         data.m_nnzCounts.resize(1);
         data.m_nnzCounts[0] = 1;
         data.m_totalNnzCount = 1;
-        data.m_data = static_cast<void*>(&one);
+        data.m_data = &one;
         data.m_indices = &(indices[desc.m_classId]);
     }
 
     // Specialization for regression
     template<>
-    void CreateLabelFor(const ImageSequenceDescription<LabelType::Regression, PrecisionType>& desc, DenseSequenceData& data)
+    void CreateLabelFor(ImageSequenceDescription<LabelType::Regression, PrecisionType>& desc, DenseSequenceData& data)
     {
-        data.m_data = (void*)desc.m_label.data();
+        data.m_data = static_cast<void*>(desc.m_label.data());
     }
 
     // whether images shall be loaded in grayscale 

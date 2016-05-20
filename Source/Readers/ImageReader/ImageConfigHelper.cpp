@@ -111,11 +111,13 @@ ImageConfigHelper::ImageConfigHelper(const ConfigParameters& config)
     string precision = config.Find("precision", "float");
     if (AreEqualIgnoreCase(precision, "float"))
     {
+        m_elementType = ElementType::tfloat;
         features->m_elementType = ElementType::tfloat;
         label->m_elementType = ElementType::tfloat;
     }
     else if (AreEqualIgnoreCase(precision, "double"))
     {
+        m_elementType = ElementType::tdouble;
         features->m_elementType = ElementType::tdouble;
         label->m_elementType = ElementType::tdouble;
     }

@@ -18,6 +18,7 @@
 #include <memory> // for shared_ptr
 #include <array>
 #include <initializer_list>
+#include "Helpers.h"
 
 // This class is exported from the Math.dll
 namespace Microsoft { namespace MSR { namespace CNTK {
@@ -444,6 +445,22 @@ public:
 
     bool HasNan(const char* name) const;
     size_t CountNanInf() const;
+
+    template <class Condition>
+    void ReplaceCondition(Condition cond, ElemType v = 0)
+    {
+        auto& us = *this;
+        foreach_coord(i, j, us)
+        {
+            auto& val = us(i, j);
+            if (cond(v))
+                val = v;
+        }
+    }
+
+    void ReplaceNan(const ElemType v = 0);
+    void ReplaceInf(const ElemType v = 0);
+    void ReplaceNanInf(const ElemType v = 0);
 
     void Print(const char* matrixName, ptrdiff_t rowFirst, ptrdiff_t rowLast, ptrdiff_t colFirst, ptrdiff_t colLast) const;
     void Print(const char* matrixName = nullptr) const; // print whole matrix. can be expensive

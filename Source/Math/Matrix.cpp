@@ -4990,6 +4990,27 @@ size_t Matrix<ElemType>::CountNanInf() const
     return n;
 }
 
+template <class ElemType>
+void Matrix<ElemType>::ReplaceNan(ElemType v)
+{
+    auto c = [](const ElemType& x){ return std::isnan(x); };
+    ReplaceCondition(c, v);
+}
+
+template <class ElemType>
+void Matrix<ElemType>::ReplaceInf(ElemType v)
+{
+    auto c = [](const ElemType& x){ return !std::isfinite(x); };
+    ReplaceCondition(c, v);
+}
+
+template <class ElemType>
+void Matrix<ElemType>::ReplaceNanInf(ElemType v)
+{
+    auto c = [](const ElemType& x){ return std::isnan(x) || !std::isfinite(x); };
+    ReplaceCondition(c, v);
+}
+
 // TODO: these are scalar operations--why are they in Matrix?
 template <class ElemType>
 ElemType Matrix<ElemType>::Exp10(ElemType num)

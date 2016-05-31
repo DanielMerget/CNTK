@@ -165,7 +165,13 @@ private:
             errno = 0;
             value = static_cast<PrecisionType>(strtod(read.c_str(), &eptr));
             if (read.c_str() == eptr || errno == ERANGE)
-                invoke_error();
+            {
+                // try to recover to std::nan
+                if (strcmp(read.c_str(), "nan"))
+                    value = Matrix<PrecisionType>::MakeNan(1);
+                else
+                    invoke_error();
+            }
 
             result.push_back(value);
         }

@@ -168,7 +168,7 @@ private:
             {
                 // try to recover to std::nan
                 if (strcmp(read.c_str(), "nan"))
-                    value = Matrix<PrecisionType>::MakeNan(1);
+                    value = std::numeric_limits<PrecisionType>::lowest();
                 else
                     invoke_error();
             }

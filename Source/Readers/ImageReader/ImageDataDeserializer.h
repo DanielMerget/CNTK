@@ -167,7 +167,7 @@ private:
             if (read.c_str() == eptr || errno == ERANGE)
             {
                 // try to recover to std::nan
-                if (strcmp(read.c_str(), "nan"))
+                if ((std::strcmp(read.c_str(), "nan") == 0) || (std::strcmp(read.c_str(), "NAN") == 0))
                     value = std::numeric_limits<PrecisionType>::lowest();
                 else
                     invoke_error();

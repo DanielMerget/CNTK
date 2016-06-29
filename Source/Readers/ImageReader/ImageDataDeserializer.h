@@ -11,6 +11,7 @@
 #include "ImageConfigHelper.h"
 #include <unordered_map>
 #include <numeric>
+#include "StringUtil.h"
 
 #include <inttypes.h>
 
@@ -167,7 +168,7 @@ private:
             if (read.c_str() == eptr || errno == ERANGE)
             {
                 // try to recover to std::nan
-                if ((std::strcmp(read.c_str(), "nan") == 0) || (std::strcmp(read.c_str(), "NAN") == 0))
+                if (AreEqualIgnoreCase(read, "nan"))
                     value = std::numeric_limits<PrecisionType>::lowest();
                 else
                     invoke_error();
